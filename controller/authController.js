@@ -6,22 +6,221 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const console = require("console");
 
+// module.exports.userRegister = (req, res) => {
+//   const form = formidable();
+  
+//   form.parse(req, async (err, fields, files) => {
+//     const { userName, email, password, confirmPassword } = fields;
+
+//     const { image } = files;
+//     const error = [];
+
+//     if (!userName) {
+//       error.push("Please provide your user name");
+//     }
+//     if (!email) {
+//       error.push("Please provide your Email");
+//     }
+//     if (email && !validator.isEmail(email)) {
+//       error.push("Please provide your Valid Email");
+//     }
+//     if (!password) {
+//       error.push("Please provide your Password");
+//     }
+//     if (!confirmPassword) {
+//       error.push("Please provide your confirm Password");
+//     }
+//     if (password && confirmPassword && password !== confirmPassword) {
+//       error.push("Your Password and Confirm Password not same");
+//     }
+//     if (password && password.length < 6) {
+//       error.push("Please provide password mush be 6 charecter");
+//     }
+//     if (Object.keys(files).length === 0) {
+//       error.push("Please provide user image");
+//     }
+//     if (error.length > 0) {
+//       res.status(400).json({
+//         error: {
+//           errorMessage: error,
+//         },
+//       });
+//     } else {
+//       const getImageName = files.image.originalFilename;
+//       const randNumber = Math.floor(Math.random() * 99999);
+//       const newImageName = randNumber + getImageName;
+//       files.image.originalFilename = newImageName;
+
+//       const newPath =
+//         __dirname +
+//         `../../../frontend/public/image/${files.image.originalFilename}`;
+
+//       try {
+//         const checkUser = await registerModel.findOne({
+//           email: email,
+//         });
+//         if (checkUser) {
+//           res.status(404).json({
+//             error: {
+//               errorMessage: ["Your email already existed"],
+//             },
+//           });
+//         } else {
+//           fs.copyFile(files.image.filepath, newPath, async (error) => {
+//             if (!error) {
+//               const userCreate = await registerModel.create({
+//                 userName,
+//                 email,
+//                 password: await bcrypt.hash(password, 10),
+//                 image: files.image.originalFilename,
+//               });
+
+//               const token = jwt.sign(
+//                 {
+//                   id: userCreate._id,
+//                   email: userCreate.email,
+//                   userName: userCreate.userName,
+//                   image: userCreate.image,
+//                   registerTime: userCreate.createdAt,
+//                 },
+//                 process.env.SECRET,
+//                 {
+//                   expiresIn: process.env.TOKEN_EXP,
+//                 }
+//               );
+
+//               const options = {
+//                 expires: new Date(
+//                   Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
+//                 ),
+//               };
+
+//               res.status(201).cookie("authToken", token, options).json({
+//                 successMessage: "Your Register Successful",
+//                 token,
+//               });
+//             } else {
+//               res.status(500).json({
+//                 error: {
+//                   errorMessage: ["Interanl Server Error"],
+//                 },
+//               });
+//             }
+//           });
+//         }
+//       } catch (error) {
+//         res.status(500).json({
+//           error: {
+//             errorMessage: ["Interanl Server Error"],
+//           },
+//         });
+//       }
+//     }
+//   }); // end Formidable
+// };
+
+// module.exports.userLogin = async (req, res) => {
+//   const error = [];
+//   const { email, password } = req.body;
+
+//   if (!email) {
+//     error.push("Please provide your Email");
+//   }
+//   if (!password) {
+//     error.push("Please provide your Passowrd");
+//   }
+//   if (email && !validator.isEmail(email)) {
+//     error.push("Please provide your Valid Email");
+//   }
+//   if (error.length > 0) {
+//     res.status(400).json({
+//       error: {
+//         errorMessage: error,
+//       },
+//     });
+//   } else {
+//     try {
+//       const checkUser = await registerModel
+//         .findOne({
+//           email: email,
+//         })
+//         .select("+password");
+//         // console.log(email);
+
+//       if (checkUser) {
+//         const matchPassword = await bcrypt.compare(
+//           password,
+//           checkUser.password
+//         );
+
+//         if (matchPassword) {
+//            console.log(matchPassword);
+//           const token = jwt.sign(
+//             {
+//               id: checkUser._id,
+//               email: checkUser.email,
+//               userName: checkUser.userName,
+//               image: checkUser.image,
+//               registerTime: checkUser.createdAt,
+//             },
+//             process.env.SECRET,
+//             {
+//               expiresIn: process.env.TOKEN_EXP,
+//             }
+//           );
+//           const options = {
+//             expires: new Date(
+//               Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
+//             ),
+//           };
+
+//           res.status(200).cookie("authToken", token, options).json({
+//             successMessage: "Your Login Successful",
+//             token,
+//           });
+//         } else {
+//           res.status(400).json({
+//             error: {
+//               errorMessage: ["Your Password not Valid"],
+//             },
+//           });
+//         }
+//       } else {
+//         res.status(400).json({
+//           error: {
+//             errorMessage: ["Your Email Not Found"],
+//           },
+//         });
+//       }
+//     } catch {
+//       res.status(404).json({
+//         error: {
+//           errorMessage: ["Internal Sever Error"],
+//         },
+//       });
+//     }
+//   }
+// };
+
 module.exports.userRegister = (req, res) => {
   const form = formidable();
   form.parse(req, async (err, fields, files) => {
     const { userName, email, password, confirmPassword } = fields;
-
+    console.log(email);
+    console.log(password);
+    console.log(confirmPassword);
+    console.log(userName);
     const { image } = files;
     const error = [];
 
     if (!userName) {
-      error.push("Please provide your user name");
+      error.push("Enter user name");
     }
     if (!email) {
-      error.push("Please provide your Email");
+      error.push("Email can not be empty");
     }
     if (email && !validator.isEmail(email)) {
-      error.push("Please provide your Valid Email");
+      error.push("Enter Valid Email");
     }
     if (!password) {
       error.push("Please provide your Password");
@@ -30,10 +229,10 @@ module.exports.userRegister = (req, res) => {
       error.push("Please provide your confirm Password");
     }
     if (password && confirmPassword && password !== confirmPassword) {
-      error.push("Your Password and Confirm Password not same");
+      error.push("Password not matched");
     }
     if (password && password.length < 6) {
-      error.push("Please provide password mush be 6 charecter");
+      error.push("Please provide password mush be 6 character");
     }
     if (Object.keys(files).length === 0) {
       error.push("Please provide user image");
@@ -50,10 +249,8 @@ module.exports.userRegister = (req, res) => {
       const newImageName = randNumber + getImageName;
       files.image.originalFilename = newImageName;
 
-      const newPath =
-        __dirname +
-        `../../../frontend/public/image/${files.image.originalFilename}`;
-
+      const newPath = __dirname + `${files.image.originalFilename}`;
+      console.log(newPath);
       try {
         const checkUser = await registerModel.findOne({
           email: email,
@@ -65,6 +262,7 @@ module.exports.userRegister = (req, res) => {
             },
           });
         } else {
+          console.log("hiii");
           fs.copyFile(files.image.filepath, newPath, async (error) => {
             if (!error) {
               const userCreate = await registerModel.create({
@@ -73,7 +271,7 @@ module.exports.userRegister = (req, res) => {
                 password: await bcrypt.hash(password, 10),
                 image: files.image.originalFilename,
               });
-
+              console.log("user");
               const token = jwt.sign(
                 {
                   id: userCreate._id,
@@ -82,16 +280,14 @@ module.exports.userRegister = (req, res) => {
                   image: userCreate.image,
                   registerTime: userCreate.createdAt,
                 },
-                process.env.SECRET,
+                "ASHDFKLAHSD2323",
                 {
-                  expiresIn: process.env.TOKEN_EXP,
+                  expiresIn: "7d",
                 }
               );
-
+              console.log(token);
               const options = {
-                expires: new Date(
-                  Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
-                ),
+                expires: new Date(Date.now() + "7" * 24 * 60 * 60 * 1000),
               };
 
               res.status(201).cookie("authToken", token, options).json({
@@ -120,7 +316,10 @@ module.exports.userRegister = (req, res) => {
 
 module.exports.userLogin = async (req, res) => {
   const error = [];
-  const { email, password } = req.body;
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log(email);
+  console.log(password);
   if (!email) {
     error.push("Please provide your Email");
   }
@@ -143,13 +342,13 @@ module.exports.userLogin = async (req, res) => {
           email: email,
         })
         .select("+password");
-
+      console.log(checkUser);
       if (checkUser) {
         const matchPassword = await bcrypt.compare(
           password,
           checkUser.password
         );
-
+        console.log(matchPassword);
         if (matchPassword) {
           const token = jwt.sign(
             {
@@ -159,17 +358,16 @@ module.exports.userLogin = async (req, res) => {
               image: checkUser.image,
               registerTime: checkUser.createdAt,
             },
-            process.env.SECRET,
+            "ASHDFKLAHSD2323",
             {
-              expiresIn: process.env.TOKEN_EXP,
+              expiresIn: "7d",
             }
           );
+          console.log(token);
           const options = {
-            expires: new Date(
-              Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
-            ),
+            expires: new Date(Date.now() + "7" * 24 * 60 * 60 * 1000),
           };
-
+          console.log(options);
           res.status(200).cookie("authToken", token, options).json({
             successMessage: "Your Login Successful",
             token,
@@ -177,21 +375,21 @@ module.exports.userLogin = async (req, res) => {
         } else {
           res.status(400).json({
             error: {
-              errorMessage: ["Your Password not Valid"],
+              errorMessage: ["Your Password is not Valid"],
             },
           });
         }
       } else {
         res.status(400).json({
           error: {
-            errorMessage: ["Your Email Not Found"],
+            errorMessage: ["User not found"],
           },
         });
       }
     } catch {
       res.status(404).json({
         error: {
-          errorMessage: ["Internal Sever Error"],
+          errorMessage: ["Internal Server Error"],
         },
       });
     }

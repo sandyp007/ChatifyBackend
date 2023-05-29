@@ -1,4 +1,7 @@
 const router = require("express").Router();
+// 
+const {upload}=require("../utils/authUtils");
+// 
 
 const {
   getFriends,
@@ -10,6 +13,10 @@ const {
 } = require("../controller/messengerController");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
+// 
+// router.post('/upload-doc',authMiddleware, upload,shareDocuments);
+// router.delete('/delete-message/:id' ,authMiddleware, deleteMessage );
+// 
 router.get("/get-friends", authMiddleware, getFriends);
 router.post("/send-message", authMiddleware, messageUploadDB);
 router.get("/get-message/:id", authMiddleware, messageGet);
